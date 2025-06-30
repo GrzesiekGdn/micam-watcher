@@ -1,0 +1,10 @@
+[Unit]
+Description=Camera/Mic Watcher for Home Assistant
+
+[Service]
+ExecStart=/usr/local/bin/micam-watcher
+Restart=always
+User=your-username
+
+[Install]
+WantedBy=multi-user.target
