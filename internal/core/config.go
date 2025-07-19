@@ -1,8 +1,9 @@
 package core
 
 import (
-    "encoding/json"
-    "os"
+	"encoding/json"	
+	"os"
+	"path/filepath"
 )
 
 type Config struct {
@@ -12,12 +13,19 @@ type Config struct {
     LogPath  string `json:"logPath,omitempty"`
 }
 
-func LoadConfig(path string) (Config, error) {
-    var config Config
-    data, err := os.ReadFile(path)
-    if err != nil {
-        return config, err
-    }
-    err = json.Unmarshal(data, &config)
-    return config, err
+func LoadConfig() (Config, error) {
+	var config Config
+		exePath, err := os.Executable()
+	if err != nil {
+		return config, err
+	}
+	configPath := filepath.Join(filepath.Dir(exePath), "config.json")
+
+	fileData, err := os.ReadFile(configPath)
+	
+	if err != nil {
+		return config, err
+	}
+	
+	return config, json.Unmarshal(fileData, &config)
 }

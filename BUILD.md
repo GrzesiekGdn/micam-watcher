@@ -3,7 +3,7 @@
 ## 🖥️ Build for Current OS
 
 ```bash
-go build -o micam-watcher ./cmd/micam-watcher
+go build -o ./bin/micam-watcher ./cmd/micam-watcher
 ```
 
 ## 🪟 Build for Windows from Linux/macOS
