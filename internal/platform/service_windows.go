@@ -1,15 +1,16 @@
 //go:build windows
+
 package platform
 
 import (
 	"log"
 	"time"
 
+	"github.com/GrzesiekGdn/micam-watcher/internal/common"
+	"github.com/GrzesiekGdn/micam-watcher/internal/core"
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/debug"
-    "github.com/GrzesiekGdn/micam-watcher/internal/core"
 )
-
 
 func StartService() {
 	isInteractive, err := svc.IsAnInteractiveSession()
@@ -17,7 +18,7 @@ func StartService() {
 		log.Fatalf("Failed to determine session type: %v", err)
 	}
 
-	config, err := core.LoadConfig()
+	config, err := common.LoadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
@@ -44,7 +45,7 @@ func (m *myService) Execute(args []string, r <-chan svc.ChangeRequest, status ch
 
 	const cmdsAccepted = svc.AcceptStop | svc.AcceptShutdown | svc.AcceptPauseAndContinue
 
-	config, err := core.LoadConfig()
+	config, err := common.LoadConfig()
 	if err != nil {
 		log.Printf("Error loading configuration: %v", err)
 		log.Fatalln("Failed to load configuration. Exiting service.")

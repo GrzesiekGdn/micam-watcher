@@ -1,9 +1,10 @@
 //go:build windows
+
 package platformservices
 
 import (
 	"fmt"
-
+	"github.com/GrzesiekGdn/micam-watcher/internal/common"
 	"golang.org/x/sys/windows/registry"
 )
 
@@ -13,10 +14,11 @@ const (
 	lastUsedTimeStop  = "LastUsedTimeStop"
 )
 
-func GetActiveCameraApplicationsCount(userSid string) (int, error) {
+func IsCameraInUse(config common.Config) (bool, error) {
+	userSid := config.UserSid
 	activeApps, err := _getActiveApplications(userSid, CameraKeyPath)
 	if err != nil {
-		return 0, err
+		return false, err
 	}
 
 	if len(activeApps) > 0 {
@@ -28,13 +30,14 @@ func GetActiveCameraApplicationsCount(userSid string) (int, error) {
 		fmt.Println("Camera is not in use.")
 	}
 
-	return len(activeApps), err
+	return len(activeApps) > 0, err
 }
 
-func GetActiveMicrophoneApplicationsCount(userSid string) (int, error) {
+func IsMicrophoneInUse(config common.Config) (bool, error) {
+	userSid := config.UserSid
 	activeApps, err := _getActiveApplications(userSid, MicrophoneKeyPath)
 	if err != nil {
-		return 0, err
+		return false, err
 	}
 
 	if len(activeApps) > 0 {
@@ -46,7 +49,7 @@ func GetActiveMicrophoneApplicationsCount(userSid string) (int, error) {
 		fmt.Println("Microphone is not in use.")
 	}
 
-	return len(activeApps), err
+	return len(activeApps) > 0, err
 }
 
 func _getActiveApplications(userSid string, keyPath string) ([]string, error) {

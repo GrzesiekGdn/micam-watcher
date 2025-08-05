@@ -2,5 +2,6 @@
   "url": "http://homeassistant.local:8123/api/webhook/my-light-trigger",
   "timespan": 3000,
   "userSid": "S-1-5-21-XXX",
-  "logPath": "/var/log/micam-watcher.log"
+  "logPath": "/var/log/micam-watcher.log",
+  "device":  "/dev/video*"
 }

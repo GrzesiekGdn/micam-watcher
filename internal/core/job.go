@@ -1,22 +1,23 @@
 package core
 
 import (
-	"log"
+	"github.com/GrzesiekGdn/micam-watcher/internal/common"
 	"github.com/GrzesiekGdn/micam-watcher/internal/platformservices"
+	"log"
 )
 
-var lastNumberOfCameras = -1
-var lastNumberOfMicrophones = -1
+var lastIsCameraInUse = false
+var lastIsMicrophoneInUse = false
 
-func RunMainJob(config Config) {
+func RunMainJob(config common.Config) {
 	log.Println("Checking for active camera and microphone applications...")
-	numberOfCameras, err := platformservices.GetActiveCameraApplicationsCount(config.UserSid)
+	isCameraInUse, err := platformservices.IsCameraInUse(config)
 	if err != nil {
 		log.Printf("Error checking active camera applications: %v", err)
 		return
 	}
 
-	numberOfMicrophones, err := platformservices.GetActiveMicrophoneApplicationsCount(config.UserSid)
+	isMicrophoneInUse, err := platformservices.IsMicrophoneInUse(config)
 	if err != nil {
 		log.Printf("Error checking active microphone applications: %v", err)
 		return
@@ -24,11 +25,8 @@ func RunMainJob(config Config) {
 
 	log.Println("Done checking active camera and microphone applications.")
 
-	if numberOfCameras != lastNumberOfCameras || numberOfMicrophones != lastNumberOfMicrophones {
-		cameraOn := numberOfCameras > 0
-		microphoneOn := numberOfMicrophones > 0
-
-		err := SendPost(config.Url, cameraOn, microphoneOn)
+	if isCameraInUse != lastIsCameraInUse || isMicrophoneInUse != lastIsMicrophoneInUse {
+		err := SendPost(config.Url, isCameraInUse, isMicrophoneInUse)
 		if err != nil {
 			log.Printf("Error sending POST request: %v", err)
 			return
@@ -36,7 +34,7 @@ func RunMainJob(config Config) {
 
 		log.Println("Sent POST request to Home Assistant.")
 
-		lastNumberOfCameras = numberOfCameras
-		lastNumberOfMicrophones = numberOfMicrophones
+		lastIsCameraInUse = isCameraInUse
+		lastIsMicrophoneInUse = isMicrophoneInUse
 	}
 }

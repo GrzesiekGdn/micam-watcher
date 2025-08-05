@@ -1,17 +1,22 @@
 //go:build linux
+
 package platform
 
 import (
-    "log"
-
-    "github.com/GrzesiekGdn/micam-watcher/internal/core"
+	"github.com/GrzesiekGdn/micam-watcher/internal/common"
+	"github.com/GrzesiekGdn/micam-watcher/internal/core"
+	"log"
+	"time"
 )
 
 func StartService() {
-	config, err := core.LoadConfig()
+	config, err := common.LoadConfig()
 	if err != nil {
-		log.Fatalf("Failed to load configuration: %v", err)        
+		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
-    core.RunMainJob(config)
+	for {
+		core.RunMainJob(config)
+		time.Sleep(time.Duration(config.Timespan) * time.Millisecond)
+	}
 }
