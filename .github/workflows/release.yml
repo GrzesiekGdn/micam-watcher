@@ -1,52 +1,41 @@
-name: Release
+name: Build micam-watcher
 
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - 'v*'
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        goos: [linux, windows]
-        goarch: [amd64]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
+          go-version: 1.22
 
-      - name: Build
+      - name: Build binaries
         run: |
+          VERSION=${GITHUB_REF_NAME}
           mkdir -p dist
-          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} \
-          go build -ldflags "-s -w -X main.version=${GITHUB_REF_NAME}" \
-            -o dist/micam-watcher-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }} \
-            ./cmd/micam-watcher
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: micam-watcher-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: dist/*
-  
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: dist
+          # Linux binary
+          GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o dist/micam-watcher-linux-${VERSION} ./cmd/micam-watcher
+          tar -czvf dist/micam-watcher-linux-${VERSION}.tar.gz -C dist micam-watcher-linux-${VERSION} -C . config.example.json micam-watcher.service
+
+          # Windows binary
+          GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o dist/micam-watcher-windows-${VERSION}.exe ./cmd/micam-watcher
+          zip dist/micam-watcher-windows-${VERSION}.zip dist/micam-watcher-windows-${VERSION}.exe config.example.json
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v1
         with:
           files: dist/*
+          prerelease: ${{ contains(github.ref, '-test') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
