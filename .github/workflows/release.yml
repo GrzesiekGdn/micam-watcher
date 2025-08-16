@@ -12,27 +12,39 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version: 1.22
 
+      - name: Prepare dist folder
+        run: |
+          mkdir -p dist
+          cp config.example.json dist/
+          cp micam-watcher.service dist/ || echo "No service file found, skipping"
+
       - name: Build binaries
         run: |
           VERSION=${GITHUB_REF_NAME}
-          mkdir -p dist
-          cp config.example.json dist/
-          cp micam-watcher.service dist/
 
-          # Linux binary
-          GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o dist/micam-watcher-linux-${VERSION} ./cmd/micam-watcher          
-          tar -czvf dist/micam-watcher-linux-${VERSION}.tar.gz -C dist micam-watcher-linux-${VERSION} config.example.json micam-watcher.service
+          # Linux binary (inside archive, simple name)
+          GOOS=linux GOARCH=amd64 go build -ldflags "-s -w -X main.version=${VERSION}" \
+            -o dist/micam-watcher ./cmd/micam-watcher
 
-          # Windows binary
-          GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o dist/micam-watcher-windows-${VERSION}.exe ./cmd/micam-watcher
-          zip dist/micam-watcher-windows-${VERSION}.zip dist/micam-watcher-windows-${VERSION}.exe config.example.json
+          # Windows binary (inside archive, simple name)
+          GOOS=windows GOARCH=amd64 go build -ldflags "-s -w -X main.version=${VERSION}" \
+            -o dist/micam-watcher.exe ./cmd/micam-watcher
+
+      - name: Create archives
+        run: |
+          # Linux tar.gz (archive filename includes version)
+          tar -czvf dist/micam-watcher-linux-${VERSION}.tar.gz -C dist micam-watcher config.example.json micam-watcher.service
+
+          # Windows zip (archive filename includes version)
+          zip -j dist/micam-watcher-windows-${VERSION}.zip dist/micam-watcher.exe config.example.json
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
