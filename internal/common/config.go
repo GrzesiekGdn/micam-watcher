@@ -9,9 +9,9 @@ import (
 type Config struct {
 	Url      string `json:"url"`
 	Timespan int    `json:"timespan"`
-	UserSid  string `json:"userSid,omitempty"`
+	UserSid  string `json:"user-sid,omitempty"`
 	Device   string `json:"device,omitempty"`
-	LogPath  string `json:"logPath,omitempty"`
+	LogPath  string `json:"log-path,omitempty"`
 }
 
 func LoadConfig() (Config, error) {

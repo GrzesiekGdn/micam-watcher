@@ -16,6 +16,7 @@ const (
 
 func IsCameraInUse(config common.Config) (bool, error) {
 	userSid := config.UserSid
+
 	activeApps, err := _getActiveApplications(userSid, CameraKeyPath)
 	if err != nil {
 		return false, err
@@ -33,9 +34,8 @@ func IsCameraInUse(config common.Config) (bool, error) {
 	return len(activeApps) > 0, err
 }
 
-func IsMicrophoneInUse(config common.Config) (bool, error) {
-	userSid := config.UserSid
-	activeApps, err := _getActiveApplications(userSid, MicrophoneKeyPath)
+func IsMicrophoneInUse(config common.Config) (bool, error) {	
+	activeApps, err := _getActiveApplications(config.UserSid, MicrophoneKeyPath)
 	if err != nil {
 		return false, err
 	}

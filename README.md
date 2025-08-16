@@ -51,7 +51,8 @@ Example `config.json`:
   "endpoint": "http://homeassistant.local/api/webhook/device-status",
   "timestamp": 1000,
   "userSID": "S-1-5-21-1234567890-123456789-1234567890-1001",
-  "device":  "/dev/video*"
+  "device":  "/dev/video*",
+  "log-path": "/var/log/micam-watcher.log",
 }
 ```
 
@@ -60,6 +61,7 @@ Fields:
 - timestamp - interval in milliseconds between checks
 - userSID - (Windows only) SID of the monitored user
 - device - (Linux only) device to monitor camera
+- log-path - optional path to log file.
 
 ## 🚀 Quick Start
 
@@ -111,3 +113,14 @@ See BUILD.md for:
 - Building from source
 - Cross-compilation (Linux ↔ Windows)
 - Full service installation commands
+
+## ⚠️ Antivirus Notes
+
+`micam-watcher` is a small monitoring tool written in Go.  
+Since it accesses **system resources** (camera, microphone, registry on Windows, `lsof/pactl` on Linux), Windows Defender or other antivirus tools may occasionally flag it or require you to add an exception.
+
+This is a **false positive** — the program does **not** contain malicious code, does **not** collect or send data anywhere except the configured endpoint (e.g., Home Assistant), and is fully open source, so you can audit the code yourself.
+
+If you encounter a warning:
+- Verify you are using an official release from [this repository](https://github.com/GrzesiekGdn/micam-watcher).
+- Optionally add the binary path to your Defender exclusions.

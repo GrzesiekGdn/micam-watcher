@@ -30,8 +30,8 @@ GOOS=windows GOARCH=amd64 go build -o ./bin/windows/micam-watcher.exe ./cmd/mica
 
 ## 🐧 Build for Linux from Windows/macOS
 
-```bash
-GOOS=linux GOARCH=amd64 go build -o ./bin/linux/micam-watcher ./cmd/micam-watcher
+```powershell
+set GOOS=linux; set GOARCH=amd64; go build -o ./bin/linux/micam-watcher ./cmd/micam-watcher
 ```
 
 ## 🚀 Install as a Service
@@ -39,11 +39,11 @@ GOOS=linux GOARCH=amd64 go build -o ./bin/linux/micam-watcher ./cmd/micam-watche
 ### Windows
 
 ```powershell
-GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o ./bin/windows/micam-watcher.exe ./cmd/micam-watcher
+set GOOS=windows; set GOARCH=amd64; go build -ldflags "-s -w" -o ./bin/windows/micam-watcher.exe ./cmd/micam-watcher
 mkdir "C:\Program Files\micam-watcher"
 # sc.exe stop Micam-watcher   # optional, if already installed
-copy ./bin/windows/micam-watcher.exe "C:\Program Files\micam-watcher\"
-copy ./bin/config.json "C:\Program Files\micam-watcher\"
+Copy bin\windows\micam-watcher.exe "C:\Program Files\micam-watcher\"
+Copy bin\config.json "C:\Program Files\micam-watcher\"
 sc.exe create Micam-watcher binPath="C:\Program Files\micam-watcher\micam-watcher.exe"
 sc.exe start Micam-watcher
 ```
