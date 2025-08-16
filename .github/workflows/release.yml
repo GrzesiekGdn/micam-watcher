@@ -23,10 +23,12 @@ jobs:
         run: |
           VERSION=${GITHUB_REF_NAME}
           mkdir -p dist
+          cp config.example.json dist/
+          cp micam-watcher.service dist/
 
           # Linux binary
-          GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o dist/micam-watcher-linux-${VERSION} ./cmd/micam-watcher
-          tar -czvf dist/micam-watcher-linux-${VERSION}.tar.gz -C dist micam-watcher-linux-${VERSION} -C . config.example.json micam-watcher.service
+          GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o dist/micam-watcher-linux-${VERSION} ./cmd/micam-watcher          
+          tar -czvf dist/micam-watcher-linux-${VERSION}.tar.gz -C dist micam-watcher-linux-${VERSION} config.example.json micam-watcher.service
 
           # Windows binary
           GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o dist/micam-watcher-windows-${VERSION}.exe ./cmd/micam-watcher
