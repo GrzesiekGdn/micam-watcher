@@ -107,6 +107,23 @@ sc.exe start Micam-watcher
 
 ```
 
+## 🔩 Alternative: hardware LED sensor
+
+`micam-watcher` has to run **on the machine you are monitoring**. On a corporate or otherwise
+locked-down computer that is often impossible — no admin rights, no installing services, no
+touching registry keys or systemd units.
+
+For that case there is a companion project:
+**[brio105-led-sensor](https://github.com/GrzesiekGdn/brio105-led-sensor)** — a 3D-printable
+clip that holds a phototransistor over a Logitech Brio 105's activity LED, so an Arduino can
+tell whether the camera is streaming without any software on the host at all. Slower to set
+up, camera-specific, and it cannot see microphone activity — but it needs no access to the
+monitored machine whatsoever.
+
+Use `micam-watcher` when you can install software; use the hardware sensor when you cannot.
+
+---
+
 ## 🔧 Build & Installation
 
 See BUILD.md for:
